@@ -10,6 +10,10 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.github.client;
 
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
 import com.codenvy.ide.collections.Array;
 import com.codenvy.ide.collections.StringMap;
 import com.codenvy.ide.ext.github.shared.Collaborators;
@@ -24,9 +28,6 @@ import com.codenvy.ide.rest.AsyncRequestLoader;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-
-import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
  * Implementation for {@link GitHubClientService}.
@@ -68,7 +69,7 @@ public class GitHubClientServiceImpl implements GitHubClientService {
     /** {@inheritDoc} */
     @Override
     public void getRepositoriesList(AsyncRequestCallback<GitHubRepositoryList> callback) {
-        String url = baseUrl + LIST;
+        final String url = baseUrl + LIST;
         asyncRequestFactory.createGetRequest(url).loader(loader).send(callback);
     }
 
@@ -76,14 +77,14 @@ public class GitHubClientServiceImpl implements GitHubClientService {
     @Override
     public void getForks(@Nonnull String user, @Nonnull String repository,
                                   @Nonnull AsyncRequestCallback<GitHubRepositoryList> callback) {
-        String url = baseUrl + FORKS + "/" + user + "/" + repository;
+        final String url = baseUrl + FORKS + "/" + user + "/" + repository;
         asyncRequestFactory.createGetRequest(url).loader(loader).send(callback);
     }
 
     /** {@inheritDoc} */
     @Override
     public void fork(@Nonnull String user, @Nonnull String repository, @Nonnull AsyncRequestCallback<GitHubRepository> callback) {
-        String url = baseUrl + CREATE_FORK + "/" + user + "/" + repository;
+        final String url = baseUrl + CREATE_FORK + "/" + user + "/" + repository;
         asyncRequestFactory.createGetRequest(url).loader(loader).send(callback);
     }
 
@@ -91,81 +92,89 @@ public class GitHubClientServiceImpl implements GitHubClientService {
     @Override
     public void createPullRequest(@Nonnull String user, @Nonnull String repository, @Nonnull GitHubPullRequestInput input,
                                   @Nonnull AsyncRequestCallback<GitHubPullRequest> callback) {
-        String url = baseUrl + PULL_REQUEST + "/" + user + "/" + repository;
+        final String url = baseUrl + PULL_REQUEST + "/" + user + "/" + repository;
         asyncRequestFactory.createPostRequest(url, input).loader(loader).send(callback);
     }
 
     /** {@inheritDoc} */
     @Override
+    public void getPullRequest(@Nonnull String user, @Nonnull String repository, int pullRequestNumber,
+                                      @Nonnull AsyncRequestCallback<GitHubPullRequest> callback) {
+        final String url = baseUrl + PULL_REQUEST + "/" + user + "/" + repository + "/" + Integer.toString(pullRequestNumber);
+        asyncRequestFactory.createGetRequest(url).loader(loader).send(callback);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void getRepositoriesByUser(String userName, AsyncRequestCallback<GitHubRepositoryList> callback) {
-        String params = (userName != null) ? "?username=" + userName : "";
-        String url = baseUrl + LIST_USER;
+        final String params = (userName != null) ? "?username=" + userName : "";
+        final String url = baseUrl + LIST_USER;
         asyncRequestFactory.createGetRequest(url + params).loader(loader).send(callback);
     }
 
     /** {@inheritDoc} */
     @Override
     public void getAllRepositories(AsyncRequestCallback<StringMap<Array<GitHubRepository>>> callback) {
-        String url = baseUrl + LIST_ALL;
+        final String url = baseUrl + LIST_ALL;
         asyncRequestFactory.createGetRequest(url).loader(loader).send(callback);
     }
 
     /** {@inheritDoc} */
     @Override
     public void getCollaborators(String user, String repository, AsyncRequestCallback<Collaborators> callback) {
-        String url = baseUrl + COLLABORATORS + "/" + user + "/" + repository;
+        final String url = baseUrl + COLLABORATORS + "/" + user + "/" + repository;
         asyncRequestFactory.createGetRequest(url).loader(loader).send(callback);
     }
 
     /** {@inheritDoc} */
     @Override
     public void getUserToken(@Nonnull String user, @Nonnull AsyncRequestCallback<String> callback) {
-        String url = baseUrl + TOKEN + "/" + user;
+        final String url = baseUrl + TOKEN + "/" + user;
         asyncRequestFactory.createGetRequest(url).loader(loader).send(callback);
     }
 
     /** {@inheritDoc} */
     @Override
     public void getOrganizations(AsyncRequestCallback<List<String>> callback) {
-        String url = baseUrl + ORGANIZATIONS;
+        final String url = baseUrl + ORGANIZATIONS;
         asyncRequestFactory.createGetRequest(url).loader(loader).send(callback);
     }
 
     /** {@inheritDoc} */
     @Override
     public void getUserInfo(AsyncRequestCallback<GitHubUser> callback) {
-        String url = baseUrl + USER;
+        final String url = baseUrl + USER;
         asyncRequestFactory.createGetRequest(url).loader(loader).send(callback);
     }
 
     /** {@inheritDoc} */
     @Override
     public void getRepositoriesByOrganization(String organization, AsyncRequestCallback<GitHubRepositoryList> callback) {
-        String params = (organization != null) ? "?organization=" + organization : "";
-        String url = baseUrl + LIST_ORG;
+        final String params = (organization != null) ? "?organization=" + organization : "";
+        final String url = baseUrl + LIST_ORG;
         asyncRequestFactory.createGetRequest(url + params).loader(loader).send(callback);
     }
 
     /** {@inheritDoc} */
     @Override
     public void getRepositoriesByAccount(String account, AsyncRequestCallback<GitHubRepositoryList> callback) {
-        String params = (account != null) ? "?account=" + account : "";
-        String url = baseUrl + LIST_ACCOUNT;
+        final String params = (account != null) ? "?account=" + account : "";
+        final String url = baseUrl + LIST_ACCOUNT;
         asyncRequestFactory.createGetRequest(url + params).loader(loader).send(callback);
     }
 
     /** {@inheritDoc} */
     @Override
     public void getPage(String pageLocation, AsyncRequestCallback<GitHubRepositoryList> callback) {
-        String params = (pageLocation != null) ? "?url=" + pageLocation : "";
-        String url = baseUrl + PAGE;
+        final String params = (pageLocation != null) ? "?url=" + pageLocation : "";
+        final String url = baseUrl + PAGE;
         asyncRequestFactory.createGetRequest(url + params).loader(loader).send(callback);
     }
 
     /** {@inheritDoc} */
     @Override
     public void updatePublicKey(@Nonnull AsyncRequestCallback<Void> callback) {
-        String url = baseUrl + SSH_GEN;
+        final String url = baseUrl + SSH_GEN;
         asyncRequestFactory.createPostRequest(url, null).loader(loader).send(callback);
     }
 }

@@ -10,27 +10,6 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.github.server;
 
-import com.codenvy.api.auth.oauth.OAuthTokenProvider;
-import com.codenvy.api.auth.shared.dto.OAuthToken;
-import com.codenvy.commons.env.EnvironmentContext;
-import com.codenvy.commons.json.JsonHelper;
-import com.codenvy.commons.json.JsonNameConventions;
-import com.codenvy.commons.json.JsonParseException;
-import com.codenvy.dto.server.DtoFactory;
-import com.codenvy.ide.commons.ParsingResponseException;
-import com.codenvy.ide.ext.github.shared.Collaborators;
-import com.codenvy.ide.ext.github.shared.GitHubPullRequest;
-import com.codenvy.ide.ext.github.shared.GitHubPullRequestInput;
-import com.codenvy.ide.ext.github.shared.GitHubRepository;
-import com.codenvy.ide.ext.github.shared.GitHubRepositoryList;
-import com.codenvy.ide.ext.github.shared.GitHubUser;
-
-import org.everrest.core.impl.provider.json.JsonValue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -47,6 +26,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.everrest.core.impl.provider.json.JsonValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.codenvy.api.auth.oauth.OAuthTokenProvider;
+import com.codenvy.api.auth.shared.dto.OAuthToken;
+import com.codenvy.commons.env.EnvironmentContext;
+import com.codenvy.commons.json.JsonHelper;
+import com.codenvy.commons.json.JsonNameConventions;
+import com.codenvy.commons.json.JsonParseException;
+import com.codenvy.dto.server.DtoFactory;
+import com.codenvy.ide.commons.ParsingResponseException;
+import com.codenvy.ide.ext.github.shared.Collaborators;
+import com.codenvy.ide.ext.github.shared.GitHubPullRequest;
+import com.codenvy.ide.ext.github.shared.GitHubPullRequestInput;
+import com.codenvy.ide.ext.github.shared.GitHubRepository;
+import com.codenvy.ide.ext.github.shared.GitHubRepositoryList;
+import com.codenvy.ide.ext.github.shared.GitHubUser;
 
 /**
  * Contains methods for retrieving data from GitHub and processing it before sending to client side.
@@ -110,9 +111,9 @@ public class GitHub {
         }
         final String url = "https://api.github.com/users/" + user + "/repos";
         final String method = "GET";
-        GitHubRepositoryList gitHubRepositoryList = DtoFactory.getInstance().createDto(GitHubRepositoryList.class);
-        String response = doJsonRequest(url, method, 200, gitHubRepositoryList);
-        GitHubRepository[] repositories = parseJsonResponse(response, GitHubRepository[].class, null);
+        final GitHubRepositoryList gitHubRepositoryList = DtoFactory.getInstance().createDto(GitHubRepositoryList.class);
+        final String response = doJsonRequest(url, method, 200, gitHubRepositoryList);
+        final GitHubRepository[] repositories = parseJsonResponse(response, GitHubRepository[].class, null);
         gitHubRepositoryList.setRepositories(Arrays.asList(repositories));
         return gitHubRepositoryList;
     }
@@ -135,21 +136,21 @@ public class GitHub {
                                                                                             ParsingResponseException {
         final String oauthToken = getToken(getUserId());
         final String url = "https://api.github.com/orgs/" + organization + "/repos?access_token=" + oauthToken;
-        GitHubRepositoryList gitHubRepositoryList = DtoFactory.getInstance().createDto(GitHubRepositoryList.class);
+        final GitHubRepositoryList gitHubRepositoryList = DtoFactory.getInstance().createDto(GitHubRepositoryList.class);
         return getRepositories(url, gitHubRepositoryList);
     }
 
     private GitHubRepositoryList getRepositories(String url, GitHubRepositoryList gitHubRepositoryList)
             throws IOException, GitHubException, ParsingResponseException {
         final String method = "GET";
-        String response = doJsonRequest(url, method, 200, gitHubRepositoryList);
-        GitHubRepository[] repositories = parseJsonResponse(response, GitHubRepository[].class, null);
+        final String response = doJsonRequest(url, method, 200, gitHubRepositoryList);
+        final GitHubRepository[] repositories = parseJsonResponse(response, GitHubRepository[].class, null);
         gitHubRepositoryList.getRepositories().addAll(Arrays.asList(repositories));
 
-        String nextPage = gitHubRepositoryList.getNextPage();
+        final String nextPage = gitHubRepositoryList.getNextPage();
         if (nextPage != null) {
-            String oauthToken = getToken(getUserId());
-            String nextPageUrl = nextPage + "&access_token=" + oauthToken;
+            final String oauthToken = getToken(getUserId());
+            final String nextPageUrl = nextPage + "&access_token=" + oauthToken;
             getRepositories(nextPageUrl, gitHubRepositoryList);
         }
         return gitHubRepositoryList;
@@ -174,9 +175,9 @@ public class GitHub {
         final String oauthToken = getToken(getUserId());
         final String method = "GET";
         url += "&access_token=" + oauthToken;
-        GitHubRepositoryList gitHubRepositoryList = DtoFactory.getInstance().createDto(GitHubRepositoryList.class);
+        final GitHubRepositoryList gitHubRepositoryList = DtoFactory.getInstance().createDto(GitHubRepositoryList.class);
         final String response = doJsonRequest(url, method, 200, gitHubRepositoryList);
-        GitHubRepository[] repositories = parseJsonResponse(response, GitHubRepository[].class, null);
+        final GitHubRepository[] repositories = parseJsonResponse(response, GitHubRepository[].class, null);
         gitHubRepositoryList.setRepositories(Arrays.asList(repositories));
         return gitHubRepositoryList;
     }
@@ -196,9 +197,9 @@ public class GitHub {
         final String oauthToken = getToken(getUserId());
         final String url = "https://api.github.com/user/repos?access_token=" + oauthToken;
         final String method = "GET";
-        GitHubRepositoryList gitHubRepositoryList = DtoFactory.getInstance().createDto(GitHubRepositoryList.class);
+        final GitHubRepositoryList gitHubRepositoryList = DtoFactory.getInstance().createDto(GitHubRepositoryList.class);
         final String response = doJsonRequest(url, method, 200, gitHubRepositoryList);
-        GitHubRepository[] repositories = parseJsonResponse(response, GitHubRepository[].class, null);
+        final GitHubRepository[] repositories = parseJsonResponse(response, GitHubRepository[].class, null);
         gitHubRepositoryList.setRepositories(Arrays.asList(repositories));
         return gitHubRepositoryList;
     }
@@ -223,9 +224,9 @@ public class GitHub {
         final String oauthToken = getToken(getUserId());
         final String url = "https://api.github.com/repos/" + user + '/' + repository + "/forks?access_token=" + oauthToken;
         final String method = "GET";
-        GitHubRepositoryList gitHubRepositoryList = DtoFactory.getInstance().createDto(GitHubRepositoryList.class);
+        final GitHubRepositoryList gitHubRepositoryList = DtoFactory.getInstance().createDto(GitHubRepositoryList.class);
         final String response = doJsonRequest(url, method, 200, gitHubRepositoryList);
-        GitHubRepository[] repositories = parseJsonResponse(response, GitHubRepository[].class, null);
+        final GitHubRepository[] repositories = parseJsonResponse(response, GitHubRepository[].class, null);
         gitHubRepositoryList.setRepositories(Arrays.asList(repositories));
         return gitHubRepositoryList;
     }
@@ -251,7 +252,7 @@ public class GitHub {
         final String url = "https://api.github.com/repos/" + user + '/' + repository + "/forks?access_token=" + oauthToken;
         final String method = "POST";
         final String response = doJsonRequest(url, method, 202);
-        GitHubRepository forkedRepository = parseJsonResponse(response, GitHubRepository.class, null);
+        final GitHubRepository forkedRepository = parseJsonResponse(response, GitHubRepository.class, null);
         return forkedRepository;
     }
 
@@ -276,7 +277,26 @@ public class GitHub {
         final String url = "https://api.github.com/repos/" + user + '/' + repository + "/pulls?access_token=" + oauthToken;
         final String method = "POST";
         final String response = doJsonRequest(url, method, 201, DtoFactory.getInstance().toJson(input));
-        GitHubPullRequest pr = parseJsonResponse(response, GitHubPullRequest.class, null);
+        final GitHubPullRequest pr = parseJsonResponse(response, GitHubPullRequest.class, null);
+        return pr;
+    }
+
+    /**
+     * Retrieve information on a github pull request.
+     * @param user the owner of the repository
+     * @param repository the name of the repository
+     * @param pullRequestNumber the pull request number
+     * @return the pull request information
+     * @throws GitHubException
+     * @throws IOException
+     * @throws ParsingResponseException
+     */
+    public GitHubPullRequest getPullRequest(String user, String repository, int pullRequestNumber) throws GitHubException, IOException, ParsingResponseException {
+        final String oauthToken = getToken(getUserId());
+        final String url = "https://api.github.com/repos/" + user + '/' + repository + "/pulls/" + pullRequestNumber +"?access_token=" + oauthToken;
+        final String method = "GET";
+        final String response = doJsonRequest(url, method, 200);
+        final GitHubPullRequest pr = parseJsonResponse(response, GitHubPullRequest.class, null);
         return pr;
     }
 
@@ -293,9 +313,9 @@ public class GitHub {
      */
     public Map<String, List<GitHubRepository>> availableRepositoriesList() throws IOException, GitHubException,
                                                                                   ParsingResponseException {
-        Map<String, List<GitHubRepository>> repoList = new HashMap<>();
+        final Map<String, List<GitHubRepository>> repoList = new HashMap<>();
         repoList.put(getGithubUser().getLogin(), listCurrentUserRepositories().getRepositories());
-        for (String organizationId : this.listOrganizations()) {
+        for (final String organizationId : this.listOrganizations()) {
             repoList.put(organizationId, listAllOrganizationRepositories(organizationId).getRepositories());
         }
         return repoList;
@@ -319,15 +339,15 @@ public class GitHub {
         final String method = "GET";
         final String response = doJsonRequest(url, method, 200);
         try {
-            JsonValue rootEl = JsonHelper.parseJson(response);
+            final JsonValue rootEl = JsonHelper.parseJson(response);
             if (rootEl.isArray()) {
-                Iterator<JsonValue> iter = rootEl.getElements();
+                final Iterator<JsonValue> iter = rootEl.getElements();
                 while (iter.hasNext()) {
                     result.add(iter.next().getElement("login").getStringValue());
                 }
             }
 
-        } catch (JsonParseException e) {
+        } catch (final JsonParseException e) {
             LOG.error(e.getMessage(), e);
             throw new ParsingResponseException(e);
         }
@@ -365,10 +385,10 @@ public class GitHub {
             // Iterate over list and request more info about each user.
             final GitHubUser[] collaborators = parseJsonResponse(response, GitHubUser[].class, null);
             final String userId = getUserId();
-            for (GitHubUser collaborator : collaborators) {
+            for (final GitHubUser collaborator : collaborators) {
                 response = doJsonRequest(collaborator.getUrl() + "?access_token=" + oauthToken, method, 200);
-                GitHubUser gitHubUser = parseJsonResponse(response, GitHubUser.class, null);
-                String email = gitHubUser.getEmail();
+                final GitHubUser gitHubUser = parseJsonResponse(response, GitHubUser.class, null);
+                final String email = gitHubUser.getEmail();
                 if (!(email == null || email.isEmpty() || email.equals(userId))) {
                     myCollaborators.getCollaborators().add(gitHubUser);
                 }
@@ -379,8 +399,8 @@ public class GitHub {
 
 
     public String getToken(String user) throws GitHubException, IOException {
-        OAuthToken token = oauthTokenProvider.getToken("github", user);
-        String oauthToken = token != null ? token.getToken() : null;
+        final OAuthToken token = oauthTokenProvider.getToken("github", user);
+        final String oauthToken = token != null ? token.getToken() : null;
         if (oauthToken == null || oauthToken.isEmpty()) {
             return "";
         }
@@ -513,7 +533,7 @@ public class GitHub {
     private <O> O parseJsonResponse(String json, Class<O> clazz, Type type) throws ParsingResponseException {
         try {
             return JsonHelper.fromJson(json, clazz, type, JsonNameConventions.CAMEL_UNDERSCORE);
-        } catch (JsonParseException e) {
+        } catch (final JsonParseException e) {
             throw new ParsingResponseException(e.getMessage(), e);
         }
     }
@@ -535,17 +555,17 @@ public class GitHub {
             return;
         }
         resetPages(repositoryList);
-        
-        String[] links = linkHeader.split(DELIM_LINKS);
-        for (String link : links) {
-            Matcher matcher = linkPattern.matcher(link.trim());
+
+        final String[] links = linkHeader.split(DELIM_LINKS);
+        for (final String link : links) {
+            final Matcher matcher = linkPattern.matcher(link.trim());
             if (matcher.matches() && matcher.groupCount() >= 2) {
                 // First group is the page's location:
                 String value = matcher.group(1);
                 // Remove the value of access_token parameter if exists, not to be send to client:
                 value = value.replaceFirst("access_token=\\w+&?", "");
                 // Second group is page's type
-                String rel = matcher.group(2);
+                final String rel = matcher.group(2);
                 switch (rel) {
                     case META_FIRST:
                         repositoryList.setFirstPage(value);
@@ -574,7 +594,7 @@ public class GitHub {
     private GitHubException fault(HttpURLConnection http) throws IOException {
         InputStream errorStream = null;
         try {
-            int responseCode = http.getResponseCode();
+            final int responseCode = http.getResponseCode();
             errorStream = http.getErrorStream();
             if (errorStream == null) {
                 errorStream = http.getInputStream();
@@ -583,8 +603,8 @@ public class GitHub {
                 return new GitHubException(responseCode, null, null);
             }
 
-            int length = http.getContentLength();
-            String body = readBody(errorStream, length);
+            final int length = http.getContentLength();
+            final String body = readBody(errorStream, length);
 
             if (body != null) {
                 if (http.getResponseCode() != 401) {
@@ -605,7 +625,7 @@ public class GitHub {
     private static String readBody(InputStream input, int contentLength) throws IOException {
         String body = null;
         if (contentLength > 0) {
-            byte[] b = new byte[contentLength];
+            final byte[] b = new byte[contentLength];
             int off = 0;
             int i;
             while ((i = input.read(b, off, contentLength - off)) > 0) {
@@ -613,8 +633,8 @@ public class GitHub {
             }
             body = new String(b);
         } else if (contentLength < 0) {
-            ByteArrayOutputStream bout = new ByteArrayOutputStream();
-            byte[] buf = new byte[1024];
+            final ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            final byte[] buf = new byte[1024];
             int point;
             while ((point = input.read(buf)) != -1) {
                 bout.write(buf, 0, point);

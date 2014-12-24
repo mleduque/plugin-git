@@ -10,7 +10,19 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.github.server.rest;
 
-import com.codenvy.api.auth.oauth.OAuthTokenProvider;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
 import com.codenvy.ide.commons.ParsingResponseException;
 import com.codenvy.ide.ext.git.server.GitException;
 import com.codenvy.ide.ext.github.server.GitHub;
@@ -23,21 +35,8 @@ import com.codenvy.ide.ext.github.shared.GitHubRepository;
 import com.codenvy.ide.ext.github.shared.GitHubRepositoryList;
 import com.codenvy.ide.ext.github.shared.GitHubUser;
 import com.codenvy.ide.ext.ssh.server.SshKey;
-import com.codenvy.ide.ext.ssh.server.SshKeyPair;
 import com.codenvy.ide.ext.ssh.server.SshKeyStore;
 import com.codenvy.ide.ext.ssh.server.SshKeyStoreException;
-
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 /**
  * REST service to get the list of repositories from GitHub (where sample projects are located).
@@ -80,7 +79,7 @@ public class GitHubService {
         try {
             //First, try to retrieve organization repositories:
             return github.listAllOrganizationRepositories(account);
-        } catch (GitHubException ghe) {
+        } catch (final GitHubException ghe) {
             //If account is not organization, then try by user name:
             if (ghe.getResponseStatus() == 404) {
                 return github.listUserPublicRepositories(account);
@@ -119,6 +118,14 @@ public class GitHubService {
     public GitHubPullRequest createPullRequest(@PathParam("user") String user, @PathParam("repository") String repository, GitHubPullRequestInput input)
             throws IOException, GitHubException, ParsingResponseException {
         return github.createPullRequest(user, repository, input);
+    }
+
+    @Path("pullrequest/{user}/{repository}/{number}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public GitHubPullRequest getPullRequest(@PathParam("user") String user, @PathParam("repository") String repository, @PathParam("number") int number)
+            throws IOException, GitHubException, ParsingResponseException {
+        return github.getPullRequest(user, repository, number);
     }
 
     @Path("list/available")
@@ -180,14 +187,14 @@ public class GitHubService {
             } else {
                 publicKey = sshKeyStore.genKeyPair(host, null, null).getPublicKey();
             }
-        } catch (SshKeyStoreException e) {
+        } catch (final SshKeyStoreException e) {
             throw new GitException(e.getMessage(), e);
         }
 
         // update public key
         try {
             githubKeyUploader.uploadKey(publicKey);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new GitException(e.getMessage(), e);
         }
     }

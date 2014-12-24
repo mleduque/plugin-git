@@ -10,6 +10,10 @@
  *******************************************************************************/
 package com.codenvy.ide.ext.github.client;
 
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
 import com.codenvy.ide.collections.Array;
 import com.codenvy.ide.collections.StringMap;
 import com.codenvy.ide.ext.github.shared.Collaborators;
@@ -19,10 +23,6 @@ import com.codenvy.ide.ext.github.shared.GitHubRepository;
 import com.codenvy.ide.ext.github.shared.GitHubRepositoryList;
 import com.codenvy.ide.ext.github.shared.GitHubUser;
 import com.codenvy.ide.rest.AsyncRequestCallback;
-
-import javax.annotation.Nonnull;
-
-import java.util.List;
 
 /**
  * Client service for Samples.
@@ -73,6 +73,18 @@ public interface GitHubClientService {
                                            @Nonnull String repository,
                                            @Nonnull GitHubPullRequestInput input,
                                            @Nonnull AsyncRequestCallback<GitHubPullRequest> callback);
+
+    /**
+     * Retrive the id of the issue linked to this pull request.
+     * @param user the owner of the repository
+     * @param repository the name of the repository
+     * @param pullRequestNumber the number of the pull request
+     * @param callback
+     */
+    void getPullRequest(@Nonnull String user,
+                        @Nonnull String repository,
+                        int pullRequestNumber,
+                        @Nonnull AsyncRequestCallback<GitHubPullRequest> callback);
 
     /**
      * Get the list of available public repositories from GitHub user.
