@@ -19,8 +19,10 @@ import com.codenvy.ide.api.selection.Selection;
 import com.codenvy.ide.api.selection.SelectionAgent;
 import com.codenvy.ide.ext.git.client.GitLocalizationConstant;
 import com.codenvy.ide.ext.git.client.GitServiceClient;
+import com.codenvy.ide.ext.git.shared.Status;
 import com.codenvy.ide.rest.AsyncRequestCallback;
-import com.codenvy.ide.rest.StringUnmarshaller;
+import com.codenvy.ide.rest.DtoUnmarshallerFactory;
+import com.codenvy.ide.rest.Unmarshallable;
 import com.codenvy.ide.websocket.WebSocketException;
 import com.codenvy.ide.websocket.rest.RequestCallback;
 import com.google.inject.Inject;
@@ -45,6 +47,7 @@ public class AddToIndexPresenter implements AddToIndexView.ActionDelegate {
     private CurrentProject          project;
     private SelectionAgent          selectionAgent;
     private NotificationManager     notificationManager;
+    private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
 
     /**
      * Create presenter
@@ -58,11 +61,12 @@ public class AddToIndexPresenter implements AddToIndexView.ActionDelegate {
      */
     @Inject
     public AddToIndexPresenter(AddToIndexView view,
-                               GitServiceClient service,
-                               GitLocalizationConstant constant,
                                AppContext appContext,
-                               SelectionAgent selectionAgent,
-                               NotificationManager notificationManager) {
+                               DtoUnmarshallerFactory dtoUnmarshallerFactory,
+                               GitLocalizationConstant constant,
+                               GitServiceClient service,
+                               NotificationManager notificationManager,
+                               SelectionAgent selectionAgent) {
         this.view = view;
         this.view.setDelegate(this);
         this.service = service;
@@ -70,6 +74,7 @@ public class AddToIndexPresenter implements AddToIndexView.ActionDelegate {
         this.appContext = appContext;
         this.selectionAgent = selectionAgent;
         this.notificationManager = notificationManager;
+        this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
     }
 
     /** Show dialog. */
@@ -78,11 +83,12 @@ public class AddToIndexPresenter implements AddToIndexView.ActionDelegate {
         if (project == null) {
             return;
         }
-        service.statusText(project.getRootProject(), false,
-                           new AsyncRequestCallback<String>(new StringUnmarshaller()) {
+        final Unmarshallable<Status> unmarshall = this.dtoUnmarshallerFactory.newUnmarshaller(Status.class);
+        service.status(project.getRootProject(),
+                           new AsyncRequestCallback<Status>(unmarshall) {
                                @Override
-                               protected void onSuccess(String result) {
-                                   if (haveChanges(result)) {
+                               protected void onSuccess(final Status result) {
+                                   if (!result.isClean()) {
                                        final String workDir = project.getRootProject().getPath();
                                        view.setMessage(formMessage(workDir));
                                        view.setUpdated(false);

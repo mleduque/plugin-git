@@ -23,6 +23,7 @@ import com.codenvy.ide.ext.git.shared.RepoInfo;
 import com.codenvy.ide.ext.git.shared.ResetRequest;
 import com.codenvy.ide.ext.git.shared.Revision;
 import com.codenvy.ide.ext.git.shared.Status;
+import com.codenvy.ide.ext.git.shared.StatusFormat;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.websocket.WebSocketException;
 import com.codenvy.ide.websocket.rest.RequestCallback;
@@ -401,7 +402,7 @@ public interface GitServiceClient {
     /**
      * Gets the working tree status. The status of added, modified or deleted files is shown is written in {@link String}. The format may
      * be
-     * short or not. Example of detailed format:<br>
+     * long, short or porcelain. Example of detailed format:<br>
      * <p/>
      * <p/>
      * <pre>
@@ -427,7 +428,7 @@ public interface GitServiceClient {
      *         to show in short format or not
      * @param callback
      */
-    void statusText(@Nonnull ProjectDescriptor project, boolean shortFormat, @Nonnull AsyncRequestCallback<String> callback);
+    void statusText(@Nonnull ProjectDescriptor project, StatusFormat format, @Nonnull AsyncRequestCallback<String> callback);
 
     /**
      * Gets the working tree status : list of untracked, changed not commited and changed not updated.

@@ -11,8 +11,6 @@
 package com.codenvy.ide.ext.git.server.rest;
 
 import com.codenvy.api.core.ApiException;
-import com.codenvy.api.core.ForbiddenException;
-import com.codenvy.api.core.NotFoundException;
 import com.codenvy.api.core.ServerException;
 import com.codenvy.api.core.UnauthorizedException;
 import com.codenvy.api.project.shared.dto.ImportSourceDescriptor;
@@ -57,6 +55,7 @@ import com.codenvy.ide.ext.git.shared.ResetRequest;
 import com.codenvy.ide.ext.git.shared.Revision;
 import com.codenvy.ide.ext.git.shared.RmRequest;
 import com.codenvy.ide.ext.git.shared.Status;
+import com.codenvy.ide.ext.git.shared.StatusFormat;
 import com.codenvy.ide.ext.git.shared.Tag;
 import com.codenvy.ide.ext.git.shared.TagCreateRequest;
 import com.codenvy.ide.ext.git.shared.TagDeleteRequest;
@@ -213,7 +212,7 @@ public class GitService {
         Revision revision = gitConnection.commit(request);
         try {
             if (revision.isFake()) {
-                Status status = status(false);
+                Status status = status(StatusFormat.LONG);
 
                 try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
                     ((InfoPage)status).writeTo(bos);
@@ -405,10 +404,10 @@ public class GitService {
     @Path("status")
     @POST
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-    public Status status(@QueryParam("short") boolean shortFormat) throws ApiException {
+    public Status status(@QueryParam("format") StatusFormat format) throws ApiException {
         GitConnection gitConnection = getGitConnection();
         try {
-            return gitConnection.status(shortFormat);
+            return gitConnection.status(format);
         } finally {
             gitConnection.close();
         }

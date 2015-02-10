@@ -41,6 +41,7 @@ import com.codenvy.ide.ext.git.shared.ResetRequest;
 import com.codenvy.ide.ext.git.shared.Revision;
 import com.codenvy.ide.ext.git.shared.RmRequest;
 import com.codenvy.ide.ext.git.shared.Status;
+import com.codenvy.ide.ext.git.shared.StatusFormat;
 import com.codenvy.ide.ext.git.shared.Tag;
 import com.codenvy.ide.ext.git.shared.TagCreateRequest;
 import com.codenvy.ide.ext.git.shared.TagDeleteRequest;
@@ -354,13 +355,13 @@ public interface GitConnection extends Closeable {
     /**
      * Get status of working tree.
      *
-     * @param shortFormat
-     *         shortFormat
+     * @param format
+     *         the format of the ouput
      * @return status.
      * @throws GitException
      *         if any error occurs
      */
-    Status status(boolean shortFormat) throws GitException;
+    Status status(StatusFormat format) throws GitException;
 
     /**
      * Create new tag.
